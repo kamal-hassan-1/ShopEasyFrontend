@@ -103,8 +103,6 @@ document.addEventListener("DOMContentLoaded", function () {
 	updateProfileDropdown();
 });
 
-// ...existing code...
-
 document
 	.querySelector(".newsletter-form")
 	.addEventListener("submit", async function (e) {
@@ -153,5 +151,3 @@ document
 			button.disabled = false;
 		}, 2000);
 	});
-
-// ...existing code...

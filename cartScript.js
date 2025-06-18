@@ -1,12 +1,85 @@
-let cartItems = [
-	{ id: 1, name: "Designer Handbag", price: 299.99, quantity: 1 },
-	{ id: 2, name: "Luxury Watch", price: 599.99, quantity: 1 },
-	{ id: 3, name: "Premium Sunglasses", price: 199.99, quantity: 1 },
-];
-
+let cartItems = [];
 let isLoggedIn = false;
-
 let appliedDiscount = 0;
+
+// Fetch cart items from backend
+async function fetchCartItems() {
+	const token = localStorage.getItem("authToken");
+	if (!token) {
+		showEmptyCart();
+		return;
+	}
+	try {
+		const res = await fetch("http://localhost:5000/api/main/fetchCartItems", {
+			headers: {
+				Authorization: `Bearer ${token}`,
+			},
+		});
+		if (!res.ok) {
+			showEmptyCart();
+			return;
+		}
+		const products = await res.json();
+		// Assign unique ids and default quantity
+		cartItems = products.map((p, idx) => ({
+			id: idx + 1,
+			name: p.name,
+			category: p.category,
+			price: p.price,
+			imageUrl: p.imageUrl,
+			quantity: 1,
+		}));
+		renderCartItems();
+		updateCartBadge();
+		updateCartSummary();
+	} catch (err) {
+		console.error("Failed to fetch cart items:", err);
+		showEmptyCart();
+	}
+}
+
+// Render cart items in the DOM
+function renderCartItems() {
+	const list = document.getElementById("cartItemsList");
+	list.innerHTML = "";
+	if (cartItems.length === 0) {
+		showEmptyCart();
+		return;
+	}
+	cartItems.forEach((item) => {
+		const div = document.createElement("div");
+		div.className = "cart-item";
+		div.dataset.id = item.id;
+		div.dataset.price = item.price;
+		div.innerHTML = `
+            <div class="item-image"><img src="${item.imageUrl}" alt="${
+			item.name
+		}" style="width:60px;height:60px;border-radius:8px;"></div>
+            <div class="item-details">
+                <div class="item-name">${item.name}</div>
+                <div class="item-category">${item.category}</div>
+                <div class="item-price">$${item.price.toFixed(2)}</div>
+            </div>
+            <div class="item-controls">
+                <div class="quantity-controls">
+                    <button class="qty-btn" onclick="updateQuantity(${
+											item.id
+										}, -1)">-</button>
+                    <input type="number" class="qty-input" value="${
+											item.quantity
+										}" min="1" readonly />
+                    <button class="qty-btn" onclick="updateQuantity(${
+											item.id
+										}, 1)">+</button>
+                </div>
+                <button class="remove-item" onclick="removeItem(${
+									item.id
+								})">Remove</button>
+            </div>
+        `;
+		list.appendChild(div);
+	});
+}
 
 // Update quantity
 function updateQuantity(itemId, change) {
@@ -54,22 +127,53 @@ function toggleDropdown() {
 	dropdown.classList.toggle("show");
 }
 
+function handleRegisterOrSignOut() {
+	// Remove authToken if present (sign out)
+	localStorage.removeItem("authToken");
+	// Redirect to register.html
+	window.location.href = "register.html";
+}
+
 function updateProfileDropdown() {
 	const dropdown = document.getElementById("profileDropdown");
-	if (isLoggedIn) {
+	const authToken = localStorage.getItem("authToken");
+	if (authToken) {
 		dropdown.innerHTML =
-			'<a href="#signout" onclick="handleSignOut()">Sign Out</a>';
+			'<a href="#" onclick="handleRegisterOrSignOut()">Sign Out</a>';
 	} else {
 		dropdown.innerHTML =
-			'<a href="#register" onclick="handleRegister()">Register</a>';
+			'<a href="#" onclick="handleRegisterOrSignOut()">Register</a>';
 	}
 }
 
 // Clear entire cart
-function clearCart() {
-	if (confirm("Are you sure you want to clear your cart?")) {
-		cartItems = [];
-		showEmptyCart();
+async function clearCart() {
+	if (!confirm("Are you sure you want to clear your cart?")) return;
+
+	const token = localStorage.getItem("authToken");
+	if (!token) {
+		alert("You must be logged in to clear your cart.");
+		return;
+	}
+
+	try {
+		const res = await fetch("http://localhost:5000/api/main/clearCart", {
+			method: "DELETE",
+			headers: {
+				Authorization: `Bearer ${token}`,
+			},
+		});
+		if (res.ok) {
+			cartItems = [];
+			showEmptyCart();
+			alert("Cart cleared successfully!");
+		} else {
+			const data = await res.json();
+			alert(data.error || "Failed to clear cart.");
+		}
+	} catch (err) {
+		console.error("Error clearing cart:", err);
+		alert("Server error. Please try again.");
 	}
 }
 
@@ -161,6 +265,6 @@ function proceedToCheckout() {
 
 // Initialize cart on page load
 document.addEventListener("DOMContentLoaded", function () {
-	updateCartBadge();
-	updateCartSummary();
+	fetchCartItems();
+	updateProfileDropdown();
 });

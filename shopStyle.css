@@ -125,6 +125,10 @@ nav {
 	background-color: #1c5d99;
 }
 
+.nav-links a[href="cart.html"] {
+	position: relative;
+}
+
 .cart-badge {
 	position: absolute;
 	top: -5px;

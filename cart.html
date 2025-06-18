@@ -15,7 +15,9 @@
 					<li><a href="home.html">Home</a></li>
 					<li><a href="shop.html">Shop</a></li>
 					<li>
-						<a href="cart.html" class="active">Cart</a>
+						<a href="cart.html" class="active">
+							Cart <span class="cart-badge" id="cartBadge">0</span>
+						</a>
 					</li>
 					<li><a href="order.html">Order</a></li>
 					<li class="profile-dropdown">
@@ -49,95 +51,7 @@
 								</button>
 							</div>
 
-							<div id="cartItemsList">
-								<!-- Sample cart items - replace with backend data -->
-								<div class="cart-item" data-id="1" data-price="299.99">
-									<div class="item-image">👜</div>
-									<div class="item-details">
-										<div class="item-name">Designer Handbag</div>
-										<div class="item-category">Accessories</div>
-										<div class="item-price">$299.99</div>
-									</div>
-									<div class="item-controls">
-										<div class="quantity-controls">
-											<button class="qty-btn" onclick="updateQuantity(1, -1)">
-												-
-											</button>
-											<input
-												type="number"
-												class="qty-input"
-												value="1"
-												min="1"
-												readonly
-											/>
-											<button class="qty-btn" onclick="updateQuantity(1, 1)">
-												+
-											</button>
-										</div>
-										<button class="remove-item" onclick="removeItem(1)">
-											Remove
-										</button>
-									</div>
-								</div>
-
-								<div class="cart-item" data-id="2" data-price="599.99">
-									<div class="item-image">⌚</div>
-									<div class="item-details">
-										<div class="item-name">Luxury Watch</div>
-										<div class="item-category">Electronics</div>
-										<div class="item-price">$599.99</div>
-									</div>
-									<div class="item-controls">
-										<div class="quantity-controls">
-											<button class="qty-btn" onclick="updateQuantity(2, -1)">
-												-
-											</button>
-											<input
-												type="number"
-												class="qty-input"
-												value="1"
-												min="1"
-												readonly
-											/>
-											<button class="qty-btn" onclick="updateQuantity(2, 1)">
-												+
-											</button>
-										</div>
-										<button class="remove-item" onclick="removeItem(2)">
-											Remove
-										</button>
-									</div>
-								</div>
-
-								<div class="cart-item" data-id="3" data-price="199.99">
-									<div class="item-image">🕶️</div>
-									<div class="item-details">
-										<div class="item-name">Premium Sunglasses</div>
-										<div class="item-category">Accessories</div>
-										<div class="item-price">$199.99</div>
-									</div>
-									<div class="item-controls">
-										<div class="quantity-controls">
-											<button class="qty-btn" onclick="updateQuantity(3, -1)">
-												-
-											</button>
-											<input
-												type="number"
-												class="qty-input"
-												value="1"
-												min="1"
-												readonly
-											/>
-											<button class="qty-btn" onclick="updateQuantity(3, 1)">
-												+
-											</button>
-										</div>
-										<button class="remove-item" onclick="removeItem(3)">
-											Remove
-										</button>
-									</div>
-								</div>
-							</div>
+							<div id="cartItemsList"></div>
 						</div>
 
 						<!-- Cart Summary -->
@@ -157,16 +71,6 @@
 							<div class="summary-row">
 								<span class="summary-label">Tax:</span>
 								<span class="summary-value" id="tax">$109.99</span>
-							</div>
-
-							<div class="coupon-section">
-								<label class="summary-label">Promo Code:</label>
-								<div class="coupon-input">
-									<input type="text" placeholder="Enter code" id="couponCode" />
-									<button class="apply-coupon" onclick="applyCoupon()">
-										Apply
-									</button>
-								</div>
 							</div>
 
 							<div class="summary-row" id="discountRow" style="display: none">
@@ -197,4 +101,5 @@
 		</main>
 	</body>
 	<script src="cartScript.js"></script>
+	<script src="cartBadge.js"></script>
 </html>

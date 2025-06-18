@@ -12,18 +12,31 @@ function handleRegister() {
 	toggleDropdown(); // Close dropdown after action
 }
 
+function handleRegisterOrSignOut() {
+	// Remove authToken if present (sign out)
+	localStorage.removeItem("authToken");
+	// Redirect to register.html
+	window.location.href = "register.html";
+}
+
 function updateProfileDropdown() {
 	const dropdown = document.getElementById("profileDropdown");
-	if (isLoggedIn) {
+	const authToken = localStorage.getItem("authToken");
+	if (authToken) {
 		dropdown.innerHTML =
-			'<a href="#signout" onclick="handleSignOut()">Sign Out</a>';
+			'<a href="#" onclick="handleRegisterOrSignOut()">Sign Out</a>';
 	} else {
 		dropdown.innerHTML =
-			'<a href="#register" onclick="handleRegister()">Register</a>';
+			'<a href="#" onclick="handleRegisterOrSignOut()">Register</a>';
 	}
 }
 
+// Call updateProfileDropdown on page load
+document.addEventListener("DOMContentLoaded", function () {
+	updateProfileDropdown();
+});
 
+// Payment method selection
 document.querySelectorAll(".payment-method").forEach((method) => {
 	method.addEventListener("click", function () {
 		document

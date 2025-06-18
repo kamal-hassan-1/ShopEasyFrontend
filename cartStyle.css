@@ -39,7 +39,7 @@ nav {
 }
 
 .nav-links {
-    font-size: 1.3rem;
+	font-size: 1.3rem;
 	display: flex;
 	list-style: none;
 	gap: 2rem;
@@ -60,7 +60,6 @@ nav {
 .nav-links a.active {
 	background-color: #1c5d99;
 }
-
 
 .profile-dropdown {
 	position: relative;
@@ -378,45 +377,6 @@ main {
 .summary-value {
 	color: #639fab;
 	font-weight: 500;
-}
-
-.coupon-section {
-	margin: 1.5rem 0;
-}
-
-.coupon-input {
-	display: flex;
-	gap: 0.5rem;
-	margin-top: 0.5rem;
-}
-
-.coupon-input input {
-	flex: 1;
-	background: #333333;
-	color: #ffffff;
-	border: 1px solid #555555;
-	padding: 0.8rem;
-	border-radius: 8px;
-}
-
-.coupon-input input:focus {
-	outline: none;
-	border-color: #1c5d99;
-}
-
-.apply-coupon {
-	background: #1c5d99;
-	color: #ffffff;
-	border: none;
-	padding: 0.8rem 1rem;
-	border-radius: 8px;
-	cursor: pointer;
-	transition: all 0.3s ease;
-	white-space: nowrap;
-}
-
-.apply-coupon:hover {
-	background: #639fab;
 }
 
 .checkout-btn {

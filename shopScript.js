@@ -13,14 +13,22 @@ function handleRegister() {
 	toggleDropdown(); // Close dropdown after action
 }
 
+function handleRegisterOrSignOut() {
+	// Remove authToken if present (sign out)
+	localStorage.removeItem("authToken");
+	// Redirect to register.html
+	window.location.href = "register.html";
+}
+
 function updateProfileDropdown() {
 	const dropdown = document.getElementById("profileDropdown");
-	if (isLoggedIn) {
+	const authToken = localStorage.getItem("authToken");
+	if (authToken) {
 		dropdown.innerHTML =
-			'<a href="#signout" onclick="handleSignOut()">Sign Out</a>';
+			'<a href="#" onclick="handleRegisterOrSignOut()">Sign Out</a>';
 	} else {
 		dropdown.innerHTML =
-			'<a href="#register" onclick="handleRegister()">Register</a>';
+			'<a href="#" onclick="handleRegisterOrSignOut()">Register</a>';
 	}
 }
 
@@ -44,7 +52,7 @@ async function addToCart(button) {
 
 	// Send to API with Authorization header
 	try {
-		const response = await fetch("http://localhost:5000/api/cart/add", {
+		const response = await fetch("http://localhost:5000/api/main/addToCart", {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
@@ -241,4 +249,5 @@ async function fetchAndDisplayProducts() {
 // Call on page load
 document.addEventListener("DOMContentLoaded", function () {
 	fetchAndDisplayProducts();
+	updateProfileDropdown();
 });

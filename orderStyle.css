@@ -39,7 +39,7 @@ nav {
 }
 
 .nav-links {
-    font-size: 1.3rem;
+	font-size: 1.3rem;
 	display: flex;
 	list-style: none;
 	gap: 2rem;
@@ -202,6 +202,19 @@ main {
 	background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
 }
 
+/* Highlight the active/completed step text */
+.step.active,
+.step.completed {
+	color: #bbcde5 !important; /* or your preferred highlight color */
+}
+
+/* Optionally, make sure the step number is also visible */
+.step.active .step-number,
+.step.completed .step-number {
+	background: #639fab;
+	color: #fff;
+}
+
 .step-number {
 	width: 30px;
 	height: 30px;
@@ -330,6 +343,7 @@ textarea:focus {
 	height: fit-content;
 	position: sticky;
 	top: 120px;
+	min-width: 450px;
 }
 
 .summary-title {
@@ -523,5 +537,15 @@ textarea:focus {
 
 	.page-title {
 		font-size: 2rem;
+	}
+}
+.order-layout {
+	display: grid;
+	grid-template-columns: 2fr 1fr;
+	gap: 2rem;
+}
+@media (max-width: 900px) {
+	.order-layout {
+		grid-template-columns: 1fr;
 	}
 }

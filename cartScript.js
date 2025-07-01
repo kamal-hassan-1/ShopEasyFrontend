@@ -20,14 +20,14 @@ async function fetchCartItems() {
 			return;
 		}
 		const products = await res.json();
-		// Assign unique ids and default quantity
+		// Use quantity from backend, default to 1 if missing
 		cartItems = products.map((p, idx) => ({
 			id: idx + 1,
 			name: p.name,
 			category: p.category,
 			price: p.price,
 			imageUrl: p.imageUrl,
-			quantity: 1,
+			quantity: p.quantity || 1,
 		}));
 		renderCartItems();
 		updateCartBadge();
@@ -38,7 +38,7 @@ async function fetchCartItems() {
 	}
 }
 
-// Render cart items in the DOM
+// Render cart items in the DOM (no increment/decrement)
 function renderCartItems() {
 	const list = document.getElementById("cartItemsList");
 	list.innerHTML = "";
@@ -59,22 +59,9 @@ function renderCartItems() {
                 <div class="item-name">${item.name}</div>
                 <div class="item-category">${item.category}</div>
                 <div class="item-price">$${item.price.toFixed(2)}</div>
-            </div>
-            <div class="item-controls">
-                <div class="quantity-controls">
-                    <button class="qty-btn" onclick="updateQuantity(${
-											item.id
-										}, -1)">-</button>
-                    <input type="number" class="qty-input" value="${
-											item.quantity
-										}" min="1" readonly />
-                    <button class="qty-btn" onclick="updateQuantity(${
-											item.id
-										}, 1)">+</button>
-                </div>
-                <button class="remove-item" onclick="removeItem(${
-									item.id
-								})">Remove</button>
+                <div class="item-quantity">Quantity: <span>${
+									item.quantity
+								}</span></div>
             </div>
         `;
 		list.appendChild(div);
@@ -83,20 +70,7 @@ function renderCartItems() {
 
 // Update quantity
 function updateQuantity(itemId, change) {
-	const item = cartItems.find((item) => item.id === itemId);
-	if (item) {
-		const newQuantity = item.quantity + change;
-		if (newQuantity > 0) {
-			item.quantity = newQuantity;
-
-			// Update UI
-			const cartItem = document.querySelector(`[data-id="${itemId}"]`);
-			const qtyInput = cartItem.querySelector(".qty-input");
-			qtyInput.value = newQuantity;
-
-			updateCartSummary();
-		}
-	}
+	// No-op: quantity is managed from backend only
 }
 
 function handleRegister() {
@@ -252,15 +226,68 @@ function applyCoupon() {
 }
 
 // Proceed to checkout
-function proceedToCheckout() {
+async function proceedToCheckout() {
 	if (cartItems.length === 0) {
 		alert("Your cart is empty!");
 		return;
 	}
 
-	// Here you would integrate with your payment system
-	alert("Proceeding to checkout... (Integration with payment gateway)");
-	console.log("Cart items for checkout:", cartItems);
+	const token = localStorage.getItem("authToken");
+	if (!token) {
+		alert("You must be logged in to place an order.");
+		return;
+	}
+
+	// Gather order summary values from the DOM
+	const subTotal = parseFloat(
+		document.getElementById("subtotal").textContent.replace(/[^0-9.]/g, "")
+	);
+	const shipping = parseFloat(
+		document.getElementById("shipping").textContent.replace(/[^0-9.]/g, "")
+	);
+	const totalTax = parseFloat(
+		document.getElementById("tax").textContent.replace(/[^0-9.]/g, "")
+	);
+	const total = parseFloat(
+		document.getElementById("total").textContent.replace(/[^0-9.]/g, "")
+	);
+
+	try {
+		const res = await fetch("http://localhost:5000/api/main/placeOrder", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+				Authorization: `Bearer ${token}`,
+			},
+			body: JSON.stringify({
+				items: cartItems.map((item) => ({
+					id: item.id,
+					quantity: item.quantity,
+				})),
+				subTotal,
+				shipping,
+				totalTax,
+				total,
+				discount: appliedDiscount,
+			}),
+		});
+
+		if (res.ok) {
+			// Order placed successfully
+			const data = await res.json();
+			alert(`Order placed successfully! Order ID: ${data.orderId}`);
+			// Clear cart and update UI
+			cartItems = [];
+			showEmptyCart();
+			updateCartBadge();
+		} else {
+			const data = await res.json();
+			alert(data.error || "Failed to place order.");
+		}
+	} catch (err) {
+		console.error("Error placing order:", err);
+		alert("Server error. Please try again.");
+	}
 }
 
 // Initialize cart on page load

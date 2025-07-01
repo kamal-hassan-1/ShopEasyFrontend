@@ -75,7 +75,8 @@ async function addToCart(button) {
 			const badge = document.querySelector(".cart-badge");
 			if (badge) badge.textContent = cartCount;
 		} else {
-			button.textContent = "Error!";
+			const errorData = await response.json();
+			button.textContent = errorData.message || "Error!";
 			button.style.background = "#d9534f";
 			setTimeout(() => {
 				button.textContent = "Add to Cart";
